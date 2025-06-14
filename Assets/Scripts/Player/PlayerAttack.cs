@@ -20,7 +20,7 @@ public class PlayerAttack : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if(enabled == true)
+        if (enabled == true)
         {
             if (collision.gameObject.CompareTag("Enemy"))
             {

@@ -5,7 +5,6 @@ public class Enemy : MonoBehaviour
 {
     public int health = 10;
     public float speed;
-    private Rigidbody2D rb;
     public int curLvl;
     public int curRoom;
     private Ability effect;
@@ -13,7 +12,6 @@ public class Enemy : MonoBehaviour
 
     public void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         effect = new Ability("no", 0, 0);
     }
 

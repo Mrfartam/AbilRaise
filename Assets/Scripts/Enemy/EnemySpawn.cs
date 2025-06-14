@@ -48,7 +48,9 @@ public class Spawn : MonoBehaviour
         while (distanceToPlayer < minSpawnDistance);
 
         //Спавн врага
-        GameObject newEnemy = Instantiate(enemyPrefab, roomPos + (Vector3)spawnPos, Quaternion.identity);
+
+        // GameObject room = GameObject.Find("RoomGenerator").GetComponent<RoomsGenerator>().GetNumRoom(numRoom);
+        GameObject newEnemy = Instantiate(enemyPrefab, roomPos + (Vector3)spawnPos, Quaternion.identity/*, room.transform*/);
         newEnemy.GetComponent<Enemy>().curRoom = numRoom;
 
         float randomScale = Random.Range(0.75f, 1.25f);

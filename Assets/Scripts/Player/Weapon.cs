@@ -1,28 +1,51 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    public float dirX, dirY, speed;
+    public float dirX, dirY;
     public float offset;
     public Joystick joystick;
     public Animator animator;
     private float rotateWeapon;
     private int swordDirection;
+    private float cooldownAttack;
+    private Player player;
 
     void Start()
     {
         offset = -45;
         swordDirection = 1;
+        cooldownAttack = 0;
+        player = GameObject.Find("Player").GetComponent<Player>();
     }
 
     void Update()
     {
-        speed = 5 * (float)(Math.Sqrt(joystick.Horizontal * joystick.Horizontal + joystick.Vertical * joystick.Vertical));
-        dirX = joystick.Horizontal * speed;
-        dirY = joystick.Vertical * speed;
+        if (cooldownAttack > 0)
+            cooldownAttack -= Time.deltaTime;
+
+        // Фрагмент с направлением оружия на врага.
+        // Пока выглядит некрасиво, поэтому не используется
+
+        /*Enemy[] enemies = player.curRoom != 0 ?
+            GameObject.Find("RoomGenerator").
+            GetComponent<RoomsGenerator>().
+            GetNumRoom(player.curRoom).
+            GetComponentsInChildren<Enemy>() :
+            new Enemy[0];
+
+        if(enemies.Length != 0)
+        {
+            Vector3 nearestEnemyPos = CalcNearestEnemyPos(enemies);
+            dirX = nearestEnemyPos.x;
+            dirY = nearestEnemyPos.y;
+        }
+        else*/
+        {
+            dirX = joystick.Horizontal;
+            dirY = joystick.Vertical;
+        }
+
         if (dirX != 0 && dirY != 0)
         {
             rotateWeapon = Mathf.Atan2(dirY, dirX) * Mathf.Rad2Deg;
@@ -36,6 +59,23 @@ public class Weapon : MonoBehaviour
         {
             animator.SetTrigger("EndAttack");
         }
+    }
+    private Vector3 CalcNearestEnemyPos(Enemy[] enemies)
+    {
+        Vector3 playerPos = player.transform.position;
+        Vector3 pos = enemies[0].transform.position - playerPos;
+        float minLen = pos.magnitude;
+
+        foreach(Enemy enemy in enemies)
+        {
+            float curLen = (enemy.transform.position - playerPos).magnitude;
+            if (curLen < minLen)
+            {
+                minLen = curLen;
+                pos = enemy.transform.position - playerPos;
+            }
+        }
+        return pos;
     }
     public void ClearColor(Color color)
     {
@@ -74,6 +114,11 @@ public class Weapon : MonoBehaviour
     }
     public void ClickButtonAttack()
     {
+        if (cooldownAttack > 0)
+            return;
+
+        cooldownAttack = 0.5f;
+
         animator.SetFloat("curRotation", rotateWeapon);
 
         /*Transform attack = transform.Find("Sword").Find("AttackPos");
